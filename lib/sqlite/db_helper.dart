@@ -61,18 +61,14 @@ class DbManager {
 
   // На груповую операцию по увеличению года
   Future<List<Map<String, dynamic>>> groupBy(String db) async {
-     print('START');
-    return await _database.rawQuery("""
-           SELECT kinopoiskSerials.year, kinopoiskSerials.name, kinopoiskMovies.year
+    print('START');
+     return await _database.rawQuery("""
+           SELECT kinopoiskSerials.year, kinopoiskMovies.year, kinopoiskSerials.name, kinopoiskSerials.type
            FROM $tableSerials
-           INNER JOIN $tableMovies
-           ON  kinopoiskMovies.id +  kinopoiskSerials.id
-           GROUP BY kinopoiskMovies.year. *
+           JOIN $tableMovies
+           ON  kinopoiskMovies.id + kinopoiskSerials.id
+           ORDER BY kinopoiskMovies.year
            """);
-    // return await _database.rawQuery(
-    //     "SELECT kinopoiskMovies.year FROM $tableMovies JOIN $tableSerials ON kinopoiskSerials.name = kinopoiskMovies.name GROUP BY year");
-    // return await _database.rawQuery(
-    //     "SELECT year, name FROM $tableSerials UNION ALL SELECT year, name FROM $tableMovies GROUP BY year");
   }
 
   //Перекресный запрос на сумму фильмов определеннго года
