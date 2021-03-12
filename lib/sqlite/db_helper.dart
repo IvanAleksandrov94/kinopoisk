@@ -8,7 +8,9 @@ class DbManager {
   static const String dbKinopoisk = 'kinopoisk.db';
   static const String tableMovies = 'kinopoiskMovies';
   static const String tableSerials = 'kinopoiskSerials';
-  static const String tablefavorites = 'kinopoiskFavorites';
+  static const String tableFavorites = 'kinopoiskFavorites';
+  static const String tableCinema = 'cinema';
+  static const String tablePrices = 'prices';
 
   // Открытие DB
   Future openDb() async {
@@ -20,14 +22,28 @@ class DbManager {
         await db.execute(
             "CREATE TABLE $tableSerials (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, title TEXT, year INTEGER,poster TEXT, description TEXT)");
         await db.execute(
-            "CREATE TABLE $tablefavorites (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, title TEXT, year INTEGER,poster TEXT, description TEXT)");
+            "CREATE TABLE $tableFavorites (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, title TEXT, year INTEGER,poster TEXT, description TEXT)");
+        await db.execute(
+            "CREATE TABLE $tableCinema (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, places INTEGER)");
+        await db.execute(
+            "CREATE TABLE $tablePrices (id INTEGER PRIMARY KEY AUTOINCREMENT, prices INTEGER)");
       });
     }
   }
 
+  Future autoInsertCinemaAndPrice() async {
+    await _database.execute("INSERT INTO $tableCinema(name, places) VALUES('Синема 5', '300')");
+    await _database.rawInsert("INSERT INTO $tableCinema(name, places) VALUES('Мир Люксор', 500)");
+    await _database.rawInsert("INSERT INTO $tableCinema(name, places) VALUES('Три пингвина', 700)");
+    await _database.rawInsert("INSERT INTO $tableCinema(name, places) VALUES('Волжский', 350)");
+    await _database.rawInsert("INSERT INTO $tablePrices(prices) VALUES(250)");
+    await _database.rawInsert("INSERT INTO $tablePrices(prices) VALUES(300)");
+    await _database.rawInsert("INSERT INTO $tablePrices(prices) VALUES(150)");
+  }
+
   //Удаление DB
-  Future deleteTable(String db) async {
-    await _database.execute('DELETE FROM $db');
+  Future deleteTable(String db, int id) async {
+    await _database.execute("DELETE FROM $db WHERE id = '$id'");
   }
 
 // Обновление DB
@@ -43,17 +59,29 @@ class DbManager {
         "INSERT INTO $db(name, type, title, year, poster, description) VALUES('${movie.name}', '${movie.type}', '${movie.title}',  ${movie.year}, '${movie.poster}', '${movie.description}')");
   }
 
-  // На груповую операцию
+  // На груповую операцию по увеличению года
   Future<List<Map<String, dynamic>>> groupBy(String db) async {
-    return await _database.rawQuery("SELECT year, name FROM $db GROUP BY year");
-  }
-  //Перекресный запрос на сууму фильмов определеннго года
-  Future<List<Map<String, dynamic>>> totalSum(String db) async {
-    return await _database.rawQuery("SELECT sum(case when year = 200 then 1 end) as Count FROM $db");
-    // return await _database.rawQuery("SELECT sum(case when year = 200 then year end) as CountFilms FROM $db");
+     print('START');
+    return await _database.rawQuery("""
+           SELECT kinopoiskSerials.year, kinopoiskSerials.name, kinopoiskMovies.year
+           FROM $tableSerials
+           INNER JOIN $tableMovies
+           ON  kinopoiskMovies.id +  kinopoiskSerials.id
+           GROUP BY kinopoiskMovies.year. *
+           """);
+    // return await _database.rawQuery(
+    //     "SELECT kinopoiskMovies.year FROM $tableMovies JOIN $tableSerials ON kinopoiskSerials.name = kinopoiskMovies.name GROUP BY year");
+    // return await _database.rawQuery(
+    //     "SELECT year, name FROM $tableSerials UNION ALL SELECT year, name FROM $tableMovies GROUP BY year");
   }
 
-  // Выборка по году  count
+  //Перекресный запрос на сумму фильмов определеннго года
+  Future<List<Map<String, dynamic>>> totalSum(String db, int yearCount) async {
+    return await _database
+        .rawQuery("SELECT SUM(case when year = $yearCount then 1 end) as Count FROM $db");
+  }
+
+  // Выборка по году count
   Future<List<Movie>> selectYear({String db, int countYearMax, int countYearMin}) async {
     List<Map<String, dynamic>> maps = await _database.rawQuery(
         'SELECT id, name, type, title, year, poster, description FROM $db WHERE year < $countYearMax AND year > $countYearMin');
