@@ -1,74 +1,68 @@
 import 'dart:async';
-import 'dart:io' as io;
+import 'package:dbproject/models/Kinopoisk.dart';
+import 'package:dbproject/repository/db_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'employee.dart';
 
-class DBHelper {
-  static Database _db;
-  static const String ID = 'id';
-  static const String NAME = 'name';
-  static const String TABLE = 'Employee';
-  static const String DB_NAME = 'employee1.db';
+class DbManager {
+  Database _database;
+  String dbKinopoisk = 'kinopoiskMovies.db';
+  // String dbNameSerials = 'kinopoisSerials.db';
+  String tableMovies = 'kinopoiskMovies';
+  String tableSerials = 'kinopoiskSerials';
 
-  Future<Database> get db async {
-    if (_db != null) {
-      return _db;
+  // Открытие DB
+  Future openDb() async {
+    if (_database == null) {
+      _database = await openDatabase(join(await getDatabasesPath(), dbKinopoisk), version: 1,
+          onCreate: (Database db, int version) async {
+        await db.execute(
+            "CREATE TABLE $tableMovies (id INTEGER PRIMARY KEY AUTOINCREMENT, movieId INTEGER, name TEXT, title TEXT, year INTEGER,poster TEXT, description TEXT)");
+        await db.execute(
+            "CREATE TABLE $tableSerials (id INTEGER PRIMARY KEY AUTOINCREMENT, movieId INTEGER, name TEXT, title TEXT, year INTEGER,poster TEXT, description TEXT)");
+      });
     }
-    _db = await initDb();
-    return _db;
   }
 
-  initDb() async {
-    io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, DB_NAME);
-    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
-    return db;
+  //Удаление DB
+  Future deleteTable() async {
+    await _database.execute('DELETE FROM $tableMovies');
   }
 
-  _onCreate(Database db, int version) async {
-    await db.execute("CREATE TABLE $TABLE ($ID INTEGER PRIMARY KEY, $NAME TEXT)");
+// Обновление DB
+  Future updateFromById(
+      int id, String name, String title, int year, String poster, String description) async {
+    await _database.execute(
+        "UPDATE $tableMovies SET id = '$id', name = '$name', title = '$title', year = '$year', poster = '$poster', description = '$description'  WHERE id = $id");
   }
 
-  Future<Employee> save(Employee employee) async {
-    var dbClient = await db;
-    employee.id = await dbClient.insert(TABLE, employee.toMap());
-    return employee;
-    /*
-    await dbClient.transaction((txn) async {
-      var query = "INSERT INTO $TABLE ($NAME) VALUES ('" + employee.name + "')";
-      return await txn.rawInsert(query);
+  // Добавление в DB
+  Future insertMovie(Movie movie) async {
+    await openDb();
+    // await _database.execute(
+    //     "INSERT INTO $tableMovies(name, movieId, title, year, poster, description) VALUES('${movie.name}', '${movie.movieId}', '${movie.title}', ${movie.year}, '${movie.poster}', '${movie.description}')");
+    return await _database.insert(tableMovies, movie.toMap());
+  }
+
+  //Получение DB
+  Future<List<Movie>> getMoviesList() async {
+    await openDb();
+    List<Map<String, dynamic>> maps = await _database.query(tableMovies);
+    return List.generate(maps.length, (i) {
+      return Movie(
+          id: maps[i]['id'],
+          movieId: maps[i]['movieId'],
+          name: maps[i]['name'],
+          title: maps[i]['title'],
+          year: maps[i]['year'],
+          poster: maps[i]['poster'],
+          description: maps[i]['description']);
     });
-    */
   }
 
-  Future<List<Employee>> getEmployees() async {
-    var dbClient = await db;
-    List<Map> maps = await dbClient.query(TABLE, columns: [ID, NAME]);
-    //List<Map> maps = await dbClient.rawQuery("SELECT * FROM $TABLE");
-    List<Employee> employees = [];
-    if (maps.length > 0) {
-      for (int i = 0; i < maps.length; i++) {
-        employees.add(Employee.fromMap(maps[i]));
-      }
-    }
-    return employees;
-  }
-
-  Future<int> delete(int id) async {
-    var dbClient = await db;
-    return await dbClient.delete(TABLE, where: '$ID = ?', whereArgs: [id]);
-  }
-
-  Future<int> update(Employee employee) async {
-    var dbClient = await db;
-    return await dbClient
-        .update(TABLE, employee.toMap(), where: '$ID = ?', whereArgs: [employee.id]);
-  }
-
-  Future close() async {
-    var dbClient = await db;
-    dbClient.close();
+  // Закрытие DB
+  Future closeDB() async {
+    _database.close();
   }
 }

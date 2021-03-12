@@ -7,7 +7,6 @@ part of 'Kinopoisk.dart';
 // **************************************************************************
 
 Serializer<Kinopoisk> _$kinopoiskSerializer = new _$KinopoiskSerializer();
-Serializer<Movies> _$moviesSerializer = new _$MoviesSerializer();
 
 class _$KinopoiskSerializer implements StructuredSerializer<Kinopoisk> {
   @override
@@ -17,49 +16,6 @@ class _$KinopoiskSerializer implements StructuredSerializer<Kinopoisk> {
 
   @override
   Iterable<Object> serialize(Serializers serializers, Kinopoisk object,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
-      'movies',
-      serializers.serialize(object.movies,
-          specifiedType:
-              const FullType(BuiltList, const [const FullType(Movies)])),
-    ];
-
-    return result;
-  }
-
-  @override
-  Kinopoisk deserialize(Serializers serializers, Iterable<Object> serialized,
-      {FullType specifiedType = FullType.unspecified}) {
-    final result = new KinopoiskBuilder();
-
-    final iterator = serialized.iterator;
-    while (iterator.moveNext()) {
-      final key = iterator.current as String;
-      iterator.moveNext();
-      final dynamic value = iterator.current;
-      switch (key) {
-        case 'movies':
-          result.movies.replace(serializers.deserialize(value,
-                  specifiedType:
-                      const FullType(BuiltList, const [const FullType(Movies)]))
-              as BuiltList<dynamic>);
-          break;
-      }
-    }
-
-    return result.build();
-  }
-}
-
-class _$MoviesSerializer implements StructuredSerializer<Movies> {
-  @override
-  final Iterable<Type> types = const [Movies, _$Movies];
-  @override
-  final String wireName = 'Movies';
-
-  @override
-  Iterable<Object> serialize(Serializers serializers, Movies object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[
       'id',
@@ -112,9 +68,9 @@ class _$MoviesSerializer implements StructuredSerializer<Movies> {
   }
 
   @override
-  Movies deserialize(Serializers serializers, Iterable<Object> serialized,
+  Kinopoisk deserialize(Serializers serializers, Iterable<Object> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new MoviesBuilder();
+    final result = new KinopoiskBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -171,96 +127,6 @@ class _$MoviesSerializer implements StructuredSerializer<Movies> {
 
 class _$Kinopoisk extends Kinopoisk {
   @override
-  final BuiltList<Movies> movies;
-
-  factory _$Kinopoisk([void Function(KinopoiskBuilder) updates]) =>
-      (new KinopoiskBuilder()..update(updates)).build();
-
-  _$Kinopoisk._({this.movies}) : super._() {
-    if (movies == null) {
-      throw new BuiltValueNullFieldError('Kinopoisk', 'movies');
-    }
-  }
-
-  @override
-  Kinopoisk rebuild(void Function(KinopoiskBuilder) updates) =>
-      (toBuilder()..update(updates)).build();
-
-  @override
-  KinopoiskBuilder toBuilder() => new KinopoiskBuilder()..replace(this);
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(other, this)) return true;
-    return other is Kinopoisk && movies == other.movies;
-  }
-
-  @override
-  int get hashCode {
-    return $jf($jc(0, movies.hashCode));
-  }
-
-  @override
-  String toString() {
-    return (newBuiltValueToStringHelper('Kinopoisk')..add('movies', movies))
-        .toString();
-  }
-}
-
-class KinopoiskBuilder implements Builder<Kinopoisk, KinopoiskBuilder> {
-  _$Kinopoisk _$v;
-
-  ListBuilder<Movies> _movies;
-  ListBuilder<Movies> get movies =>
-      _$this._movies ??= new ListBuilder<Movies>();
-  set movies(ListBuilder<Movies> movies) => _$this._movies = movies;
-
-  KinopoiskBuilder();
-
-  KinopoiskBuilder get _$this {
-    if (_$v != null) {
-      _movies = _$v.movies?.toBuilder();
-      _$v = null;
-    }
-    return this;
-  }
-
-  @override
-  void replace(Kinopoisk other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
-    _$v = other as _$Kinopoisk;
-  }
-
-  @override
-  void update(void Function(KinopoiskBuilder) updates) {
-    if (updates != null) updates(this);
-  }
-
-  @override
-  _$Kinopoisk build() {
-    _$Kinopoisk _$result;
-    try {
-      _$result = _$v ?? new _$Kinopoisk._(movies: movies.build());
-    } catch (_) {
-      String _$failedField;
-      try {
-        _$failedField = 'movies';
-        movies.build();
-      } catch (e) {
-        throw new BuiltValueNestedFieldError(
-            'Kinopoisk', _$failedField, e.toString());
-      }
-      rethrow;
-    }
-    replace(_$result);
-    return _$result;
-  }
-}
-
-class _$Movies extends Movies {
-  @override
   final int id;
   @override
   final String type;
@@ -279,10 +145,10 @@ class _$Movies extends Movies {
   @override
   final BuiltList<String> actors;
 
-  factory _$Movies([void Function(MoviesBuilder) updates]) =>
-      (new MoviesBuilder()..update(updates)).build();
+  factory _$Kinopoisk([void Function(KinopoiskBuilder) updates]) =>
+      (new KinopoiskBuilder()..update(updates)).build();
 
-  _$Movies._(
+  _$Kinopoisk._(
       {this.id,
       this.type,
       this.title,
@@ -294,27 +160,27 @@ class _$Movies extends Movies {
       this.actors})
       : super._() {
     if (id == null) {
-      throw new BuiltValueNullFieldError('Movies', 'id');
+      throw new BuiltValueNullFieldError('Kinopoisk', 'id');
     }
     if (type == null) {
-      throw new BuiltValueNullFieldError('Movies', 'type');
+      throw new BuiltValueNullFieldError('Kinopoisk', 'type');
     }
     if (title == null) {
-      throw new BuiltValueNullFieldError('Movies', 'title');
+      throw new BuiltValueNullFieldError('Kinopoisk', 'title');
     }
   }
 
   @override
-  Movies rebuild(void Function(MoviesBuilder) updates) =>
+  Kinopoisk rebuild(void Function(KinopoiskBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MoviesBuilder toBuilder() => new MoviesBuilder()..replace(this);
+  KinopoiskBuilder toBuilder() => new KinopoiskBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Movies &&
+    return other is Kinopoisk &&
         id == other.id &&
         type == other.type &&
         title == other.title &&
@@ -346,7 +212,7 @@ class _$Movies extends Movies {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('Movies')
+    return (newBuiltValueToStringHelper('Kinopoisk')
           ..add('id', id)
           ..add('type', type)
           ..add('title', title)
@@ -360,8 +226,8 @@ class _$Movies extends Movies {
   }
 }
 
-class MoviesBuilder implements Builder<Movies, MoviesBuilder> {
-  _$Movies _$v;
+class KinopoiskBuilder implements Builder<Kinopoisk, KinopoiskBuilder> {
+  _$Kinopoisk _$v;
 
   int _id;
   int get id => _$this._id;
@@ -401,9 +267,9 @@ class MoviesBuilder implements Builder<Movies, MoviesBuilder> {
       _$this._actors ??= new ListBuilder<String>();
   set actors(ListBuilder<String> actors) => _$this._actors = actors;
 
-  MoviesBuilder();
+  KinopoiskBuilder();
 
-  MoviesBuilder get _$this {
+  KinopoiskBuilder get _$this {
     if (_$v != null) {
       _id = _$v.id;
       _type = _$v.type;
@@ -420,24 +286,24 @@ class MoviesBuilder implements Builder<Movies, MoviesBuilder> {
   }
 
   @override
-  void replace(Movies other) {
+  void replace(Kinopoisk other) {
     if (other == null) {
       throw new ArgumentError.notNull('other');
     }
-    _$v = other as _$Movies;
+    _$v = other as _$Kinopoisk;
   }
 
   @override
-  void update(void Function(MoviesBuilder) updates) {
+  void update(void Function(KinopoiskBuilder) updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  _$Movies build() {
-    _$Movies _$result;
+  _$Kinopoisk build() {
+    _$Kinopoisk _$result;
     try {
       _$result = _$v ??
-          new _$Movies._(
+          new _$Kinopoisk._(
               id: id,
               type: type,
               title: title,
@@ -456,7 +322,7 @@ class MoviesBuilder implements Builder<Movies, MoviesBuilder> {
         _actors?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            'Movies', _$failedField, e.toString());
+            'Kinopoisk', _$failedField, e.toString());
       }
       rethrow;
     }

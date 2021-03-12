@@ -1,12 +1,13 @@
 import 'package:dbproject/blocs/kinopoisk_bloc/kinopoisk_bloc.dart';
+import 'package:dbproject/blocs/sql_bloc/sqlbloc_bloc.dart';
 import 'package:dbproject/presentation/screens/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'blocs/sql_bloc/bloc/sqlbloc_bloc.dart';
 
 void main() {
   runApp(MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {

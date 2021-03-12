@@ -7,7 +7,7 @@ part 'ApiService.chopper.dart';
 
 @ChopperApi()
 abstract class ApiService extends ChopperService {
-  @Get(path: '/movies/all/page/666/token/{id}')
+  @Get(path: 'https://api.kinopoisk.cloud/movies/1143242/token/{id}')
   Future<Response<Kinopoisk>> getSingleUser(@Path('id') String id);
 
   static ApiService create() {

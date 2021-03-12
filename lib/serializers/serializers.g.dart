@@ -8,10 +8,6 @@ part of 'serializers.dart';
 
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(Kinopoisk.serializer)
-      ..add(Movies.serializer)
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(Movies)]),
-          () => new ListBuilder<Movies>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>())

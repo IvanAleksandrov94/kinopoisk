@@ -4,19 +4,19 @@ import 'package:built_value/serializer.dart';
 
 part 'Kinopoisk.g.dart';
 
+// abstract class Kinopoisk implements Built<Kinopoisk, KinopoiskBuilder> {
+//   static Serializer<Kinopoisk> get serializer => _$kinopoiskSerializer;
+
+//   @BuiltValueField(wireName: 'movies')
+//   BuiltList<Movies> get movies;
+
+//   Kinopoisk._();
+
+//   factory Kinopoisk([void Function(KinopoiskBuilder) updates]) = _$Kinopoisk;
+// }
+
 abstract class Kinopoisk implements Built<Kinopoisk, KinopoiskBuilder> {
   static Serializer<Kinopoisk> get serializer => _$kinopoiskSerializer;
-
-  @BuiltValueField(wireName: 'movies')
-  BuiltList<Movies> get movies;
-
-  Kinopoisk._();
-
-  factory Kinopoisk([void Function(KinopoiskBuilder) updates]) = _$Kinopoisk;
-}
-
-abstract class Movies implements Built<Movies, MoviesBuilder> {
-  static Serializer<Movies> get serializer => _$moviesSerializer;
 
   @BuiltValueField(wireName: 'id')
   int get id;
@@ -44,9 +44,9 @@ abstract class Movies implements Built<Movies, MoviesBuilder> {
   BuiltList<String> get actors;
 
 
-  Movies._();
+  Kinopoisk._();
 
-  factory Movies([void Function(MoviesBuilder) updates]) = _$Movies;
+  factory Kinopoisk([void Function(KinopoiskBuilder) updates]) = _$Kinopoisk;
 }
 
 
