@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 class Movie {
   final int id;
   final String name;
-  final int movieId;
+  final String type;
   final String title;
   final int year;
   final String poster;
@@ -11,7 +11,8 @@ class Movie {
 
   Movie({
     @required this.name,
-    @required this.movieId,
+    
+    @required this.type,
     this.id,
     this.title,
     this.year,
@@ -23,7 +24,7 @@ class Movie {
     return {
       'id': id,
       'name': name,
-      'movieId': movieId,
+      'type': type,
       'title': title,
       'year': year,
       'poster': poster,

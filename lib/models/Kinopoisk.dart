@@ -18,8 +18,7 @@ part 'Kinopoisk.g.dart';
 abstract class Kinopoisk implements Built<Kinopoisk, KinopoiskBuilder> {
   static Serializer<Kinopoisk> get serializer => _$kinopoiskSerializer;
 
-  @BuiltValueField(wireName: 'id')
-  int get id;
+ 
   @BuiltValueField(wireName: 'type')
   String get type;
   @BuiltValueField(wireName: 'title')

@@ -18,8 +18,6 @@ class _$KinopoiskSerializer implements StructuredSerializer<Kinopoisk> {
   Iterable<Object> serialize(Serializers serializers, Kinopoisk object,
       {FullType specifiedType = FullType.unspecified}) {
     final result = <Object>[
-      'id',
-      serializers.serialize(object.id, specifiedType: const FullType(int)),
       'type',
       serializers.serialize(object.type, specifiedType: const FullType(String)),
       'title',
@@ -78,10 +76,6 @@ class _$KinopoiskSerializer implements StructuredSerializer<Kinopoisk> {
       iterator.moveNext();
       final dynamic value = iterator.current;
       switch (key) {
-        case 'id':
-          result.id = serializers.deserialize(value,
-              specifiedType: const FullType(int)) as int;
-          break;
         case 'type':
           result.type = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String;
@@ -127,8 +121,6 @@ class _$KinopoiskSerializer implements StructuredSerializer<Kinopoisk> {
 
 class _$Kinopoisk extends Kinopoisk {
   @override
-  final int id;
-  @override
   final String type;
   @override
   final String title;
@@ -149,8 +141,7 @@ class _$Kinopoisk extends Kinopoisk {
       (new KinopoiskBuilder()..update(updates)).build();
 
   _$Kinopoisk._(
-      {this.id,
-      this.type,
+      {this.type,
       this.title,
       this.year,
       this.age,
@@ -159,9 +150,6 @@ class _$Kinopoisk extends Kinopoisk {
       this.countries,
       this.actors})
       : super._() {
-    if (id == null) {
-      throw new BuiltValueNullFieldError('Kinopoisk', 'id');
-    }
     if (type == null) {
       throw new BuiltValueNullFieldError('Kinopoisk', 'type');
     }
@@ -181,7 +169,6 @@ class _$Kinopoisk extends Kinopoisk {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Kinopoisk &&
-        id == other.id &&
         type == other.type &&
         title == other.title &&
         year == other.year &&
@@ -199,9 +186,7 @@ class _$Kinopoisk extends Kinopoisk {
             $jc(
                 $jc(
                     $jc(
-                        $jc(
-                            $jc($jc($jc(0, id.hashCode), type.hashCode),
-                                title.hashCode),
+                        $jc($jc($jc(0, type.hashCode), title.hashCode),
                             year.hashCode),
                         age.hashCode),
                     poster.hashCode),
@@ -213,7 +198,6 @@ class _$Kinopoisk extends Kinopoisk {
   @override
   String toString() {
     return (newBuiltValueToStringHelper('Kinopoisk')
-          ..add('id', id)
           ..add('type', type)
           ..add('title', title)
           ..add('year', year)
@@ -228,10 +212,6 @@ class _$Kinopoisk extends Kinopoisk {
 
 class KinopoiskBuilder implements Builder<Kinopoisk, KinopoiskBuilder> {
   _$Kinopoisk _$v;
-
-  int _id;
-  int get id => _$this._id;
-  set id(int id) => _$this._id = id;
 
   String _type;
   String get type => _$this._type;
@@ -271,7 +251,6 @@ class KinopoiskBuilder implements Builder<Kinopoisk, KinopoiskBuilder> {
 
   KinopoiskBuilder get _$this {
     if (_$v != null) {
-      _id = _$v.id;
       _type = _$v.type;
       _title = _$v.title;
       _year = _$v.year;
@@ -304,7 +283,6 @@ class KinopoiskBuilder implements Builder<Kinopoisk, KinopoiskBuilder> {
     try {
       _$result = _$v ??
           new _$Kinopoisk._(
-              id: id,
               type: type,
               title: title,
               year: year,

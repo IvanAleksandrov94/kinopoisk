@@ -1,6 +1,5 @@
 import 'package:chopper/chopper.dart';
 import 'package:dbproject/blocs/kinopoisk_bloc/kinopoisk_bloc.dart';
-//import 'package:dbproject/blocs/sql_bloc/bloc/sqlbloc_bloc.dart';
 import 'package:dbproject/data/ApiService.dart';
 import 'package:dbproject/models/Kinopoisk.dart';
 import 'package:dbproject/repository/db_repository.dart';
@@ -43,7 +42,6 @@ class _HomePageState extends State<HomePage> {
     apiService = ApiService.create();
     bloc = BlocProvider.of<KinopoiskBloc>(context);
     dbManager = DbManager()..openDb();
-    
   }
 
   @override
@@ -56,47 +54,121 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Center(child: CupertinoActivityIndicator()),
               Center(
                   child: ElevatedButton(
                 onPressed: () async {
                   Kinopoisk kinopoisk;
-
-                  var movies = apiService.getSingleUser('3d4a027b299fa38e7531549768ec8209');
+                  var movies = apiService.getSingleUser(
+                      '3d4a027b299fa38e7531549768ec8209', '77044', 'tv-series');
                   movies.then((value) {
                     kinopoisk = value.body;
                     // dbManager.openDb();
-                    dbManager.insertMovie(Movie(
-                        movieId: kinopoisk.id,
-                        name: kinopoisk.title,
-                        title: kinopoisk.title,
-                        year: kinopoisk.year,
-                        poster: kinopoisk.poster,
-                        description: 'kinopoisk.description'));
+                    dbManager.insertData(
+                        DbManager.tableSerials,
+                        Movie(
+                            name: kinopoisk.title,
+                            type: kinopoisk.type,
+                            title: kinopoisk.title,
+                            year: kinopoisk.year,
+                            poster: kinopoisk.poster,
+                            description: 'kinopoisk.description'));
                   });
 
-                  dbManager.getMoviesList().then((value) {
+                  dbManager.getData(DbManager.tableSerials).then((value) {
                     print(value.length);
                     value.forEach((element) {
                       print(element.toMap());
                     });
                   });
                 },
-                child: Text('Click me'),
+                child: Text('Get Serial'),
               )),
               Center(
                   child: ElevatedButton(
                 onPressed: () async {
-                  dbManager.updateFromById(2, 'name', 'title', 1999, 'poster', 'description');
+                  Kinopoisk kinopoisk;
+                  var movies = apiService.getSingleUser(
+                      '3d4a027b299fa38e7531549768ec8209', '1143242', 'movies');
+                  movies.then((value) {
+                    kinopoisk = value.body;
+                    // dbManager.openDb();
+                    dbManager.insertData(
+                        DbManager.tableMovies,
+                        Movie(
+                            name: kinopoisk.title,
+                            type: kinopoisk.type,
+                            title: kinopoisk.title,
+                            year: kinopoisk.year,
+                            poster: kinopoisk.poster,
+                            description: 'kinopoisk.description'));
+                  });
+
+                  dbManager.getData(DbManager.tableMovies).then((value) {
+                    print(value.length);
+                    value.forEach((element) {
+                      print(element.toMap());
+                    });
+                  });
+                },
+                child: Text('Get Movie'),
+              )),
+              Center(
+                  child: ElevatedButton(
+                onPressed: () async {
+                  dbManager.updateFromById(DbManager.tableMovies, 2, 'name', 'type', 'title', 1999,
+                      'poster', 'description');
                 },
                 child: Text('update'),
               )),
               Center(
                   child: ElevatedButton(
                 onPressed: () async {
-                  dbManager.deleteTable();
+                  dbManager
+                      .selectYear(db: DbManager.tableMovies, countYearMax: 2000, countYearMin: 1900)
+                      .then((value) {
+                    value.forEach((element) {
+                      print(element.toMap());
+                    });
+                  });
                 },
-                child: Text('delete'),
+                child: Text('выборка'),
+              )),
+              Center(
+                  child: ElevatedButton(
+                onPressed: () async {
+                  dbManager.insertData(
+                      DbManager.tablefavorites,
+                      Movie(
+                          name: 'kinopoisk.title',
+                          type: 'kinopoisk.type',
+                          title: 'kinopoisk.title',
+                          year: 200,
+                          poster: 'kinopoisk.posterr',
+                          description: 'kinopoisk.description'));
+                },
+                child: Text('Добавить в избранное'),
+              )),
+              Center(
+                  child: ElevatedButton(
+                onPressed: () async {
+                  // dbManager.getData(DbManager.tablefavorites).then((value) {
+                  //   print(value.length);
+                  //   value.forEach((element) {
+                  //     print(element.toMap());
+                  //   });
+                  // });
+                  dbManager
+                      .totalSum(
+                    DbManager.tablefavorites,
+                  )
+                      .then((value) {
+                    print(value.length);
+                    value.forEach((element) {
+                      print(element);
+                    });
+                  });
+                },
+                child: Text('вывести избранное'),
               )),
             ],
           );
