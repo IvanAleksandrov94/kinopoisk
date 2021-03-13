@@ -55,9 +55,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
           child: FutureBuilder(
@@ -88,10 +85,27 @@ class _HomePageState extends State<HomePage> {
                           }
                         },
                         child: Slidable(
+                          actionExtentRatio: 0.25,
                           controller: _slidableController,
                           actionPane: SlidableDrawerActionPane(),
-                          actionExtentRatio: 0.2,
-                          showAllActionsThreshold: 0.1,
+                          actions: [
+                            SlideAction(
+                              color: Colors.green,
+                              onTap: () {
+                                dbManager.insertData(
+                                    DbManager.tableFavorites,
+                                    Movie(
+                                        name: data[index].title,
+                                        type: data[index].type,
+                                        title: data[index].title,
+                                        year: data[index].year,
+                                        poster: data[index].poster,
+                                        description: data[index].description));
+                                setState(() {});
+                              },
+                              child: Text('add favorits'),
+                            ),
+                          ],
                           secondaryActions: [
                             SlideAction(
                               color: Colors.red,
@@ -102,15 +116,18 @@ class _HomePageState extends State<HomePage> {
                               child: Text('Delete'),
                             ),
                           ],
-                          child: Column(
-                            children: [
-                              Text(data[index].id.toString()),
-                              Text(data[index].name),
-                              Text(
-                                data[index].type,
-                              ),
-                              Text(data[index].year.toString())
-                            ],
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(data[index].id.toString()),
+                                Text(data[index].name),
+                                Text(
+                                  data[index].type,
+                                ),
+                                Text(data[index].year.toString())
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -213,13 +230,39 @@ class _HomePageState extends State<HomePage> {
             Center(
                 child: ElevatedButton(
               onPressed: () async {
-                dbManager
-                    .selectYear(db: DbManager.tableMovies, countYearMax: 2000, countYearMin: 1900)
-                    .then((value) {
-                  value.forEach((element) {
-                    print(element.toMap());
+                var res =
+                    await showTextInputDialog(context: context, message: "update", textFields: [
+                  DialogTextField(
+                    hintText: 'min',
+                  ),
+                  DialogTextField(
+                    hintText: 'max',
+                  ),
+                ]);
+                if (res != null) {
+                  var a = [];
+                  dbManager
+                      .selectYear(
+                          db: activeDB,
+                          countYearMax: int.parse(res[1]),
+                          countYearMin: int.parse(res[0]))
+                      .then((value) {
+                    value.forEach((element) {
+                      a.add(element.toMap());
+                    });
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => SimpleDialog(
+                            title: Center(child: Text("параматрический")),
+                            children: a
+                                .map<Widget>((e) => Container(
+                                    height: 50,
+                                    child: SingleChildScrollView(
+                                        child: SizedBox(height: 50, child: Text(e.toString())))))
+                                .toList()));
                   });
-                });
+                  setState(() {});
+                }
               },
               child: Text('Параметрический'),
             )),
@@ -231,16 +274,43 @@ class _HomePageState extends State<HomePage> {
             Center(
                 child: ElevatedButton(
               onPressed: () async {
-                dbManager
-                    .getData(
-                  DbManager.tableFavorites,
-                )
-                    .then((value) {
-                  print(value.length);
-                  value.forEach((element) {
-                    print(element.toMap());
+                List<String> a = [];
+
+                final res = await showOkCancelAlertDialog(
+                  context: context,
+                  title: 'Вывести избранное?',
+                  okLabel: 'Ok',
+                  cancelLabel: 'Cancel',
+                );
+
+                if (res == OkCancelResult.ok) {
+                  dbManager.getData(DbManager.tableFavorites).then((value) {
+                    value.forEach((element) {
+                      a.add(element.toMap().toString());
+
+                      print(a);
+
+                      print(element);
+                    });
                   });
-                });
+                } else {
+                  
+                }
+
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => SimpleDialog(
+                        title: Center(child: Text("resoult")),
+                        children: a
+                            .map<Widget>((e) => Container(
+                                height: 50,
+                                child: SingleChildScrollView(
+                                    child: Column(
+                                  children: [
+                                    SizedBox(height: 50, child: Text(e.toString())),
+                                  ],
+                                ))))
+                            .toList()));
               },
               child: Text('вывести избранное'),
             )),
@@ -274,6 +344,100 @@ class _HomePageState extends State<HomePage> {
                             .toList()));
               },
               child: Text('На групировку'),
+            )),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                    child: ElevatedButton(
+                  onPressed: () async {
+                    List<String> a = [];
+
+                    final res = await showOkCancelAlertDialog(
+                      context: context,
+                      title: 'Выборка',
+                      okLabel: 'Movie',
+                      cancelLabel: 'Serial',
+                    );
+
+                    if (res == OkCancelResult.ok) {
+                      dbManager.selectType(DbManager.tableFavorites, 'movie').then((value) {
+                        value.forEach((element) {
+                          a.add(element.toMap().toString());
+
+                          print(a);
+
+                          print(element);
+                        });
+                      });
+                    } else {
+                      dbManager.selectType(DbManager.tableFavorites, 'tv-series').then((value) {
+                        value.forEach((element) {
+                          a.add(element.toMap().toString());
+
+                          print(a);
+
+                          print(element);
+                        });
+                      });
+                    }
+
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => SimpleDialog(
+                            title: Center(child: Text("resoult")),
+                            children: a
+                                .map<Widget>((e) => Container(
+                                    height: 50,
+                                    child: SingleChildScrollView(
+                                        child: Column(
+                                      children: [
+                                        SizedBox(height: 50, child: Text(e.toString())),
+                                      ],
+                                    ))))
+                                .toList()));
+                  },
+                  child: Text('выборка'),
+                )),
+              ],
+            ),
+            Center(
+                child: ElevatedButton(
+              onPressed: () async {
+                //Map<String, dynamic> a = {};
+                List<String> a = [];
+                var res =
+                    await showTextInputDialog(context: context, message: "update", textFields: [
+                  DialogTextField(
+                    hintText: 'year',
+                  ),
+                ]);
+                if (res != null) {
+                  dbManager.totalSum(activeDB, int.parse(res[0])).then((value) {
+                    value.forEach((element) {
+                      a.add(element.toString());
+
+                      //print(element);
+                    });
+                  });
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) => SimpleDialog(
+                          title: Center(child: Text("Перекрестный")),
+                          children: a
+                              .map<Widget>((e) => Container(
+                                  height: 50,
+                                  child: SingleChildScrollView(
+                                      child: SizedBox(height: 50, child: Text(e.toString())))))
+                              .toList()));
+                }
+              },
+              child: Text('перекрестный'),
             )),
           ],
         )
