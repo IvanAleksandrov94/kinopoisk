@@ -69,7 +69,7 @@ class DbManager {
   }
 
   // Обновление DB favorits
-  Future updateFromByIdFavorits(String db,  Movie movie) async {
+  Future updateFromByIdFavorits(String db, Movie movie) async {
     await open();
     await _database.execute(
         "UPDATE $db SET id = '${movie.id}', customer = ${movie.customer}, name = '${movie.name}', type = '${movie.type}', title = '${movie.title}', year = '${movie.year}', poster = '${movie.poster}', description = '${movie.description}'  WHERE id = ${movie.id}");
@@ -94,11 +94,13 @@ class DbManager {
     await open();
     print('START');
     return await _database.rawQuery("""
-           SELECT kinopoiskSerials.name, kinopoiskSerials.year
-           FROM $tableSerials
+           SELECT kinopoiskFavorites.name, kinopoiskFavorites.year, COUNT(*) 'кол-во' 
+           FROM $tableFavorites
            INNER JOIN $tableMovies
-           ON  kinopoiskSerials.id = kinopoiskMovies.id 
-           GROUP BY kinopoiskSerials.id
+           ON  kinopoiskMovies.id = kinopoiskFavorites.customer 
+           INNER JOIN $tableSerials
+           ON  kinopoiskSerials.id = kinopoiskFavorites.customer 
+           GROUP BY kinopoiskFavorites.name
            """);
   }
 
