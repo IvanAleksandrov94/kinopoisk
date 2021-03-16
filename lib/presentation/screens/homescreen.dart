@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:chopper/chopper.dart';
 import 'package:dbproject/blocs/kinopoisk_bloc/kinopoisk_bloc.dart';
 import 'package:dbproject/data/ApiService.dart';
 import 'package:dbproject/models/Kinopoisk.dart';
+import 'package:dbproject/presentation/screens/favorits.dart';
 import 'package:dbproject/repository/db_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +51,8 @@ class _HomePageState extends State<HomePage> {
     _slidableController = SlidableController();
     apiService = ApiService.create();
     bloc = BlocProvider.of<KinopoiskBloc>(context);
-    dbManager = DbManager()..openDb();
-    String activeDB = DbManager.tableMovies;
+    dbManager = DbManager()..open();
+    activeDB = DbManager.tableMovies;
   }
 
   @override
@@ -58,12 +61,16 @@ class _HomePageState extends State<HomePage> {
       children: [
         Expanded(
           child: FutureBuilder(
-              future: dbManager.getData(
-                activeDB,
-              ),
+              future: activeDB != null
+                  ? dbManager.getData(
+                      activeDB,
+                    )
+                  : dbManager.getData(
+                      'kinopoiskMovies',
+                    ),
               builder: (context, snapshot) {
                 List<Movie> data = snapshot.data;
-                if (snapshot.hasData) {
+                if (snapshot.data != null) {
                   return ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -92,9 +99,10 @@ class _HomePageState extends State<HomePage> {
                             SlideAction(
                               color: Colors.green,
                               onTap: () {
-                                dbManager.insertData(
+                                dbManager.insertDataFavorites(
                                     DbManager.tableFavorites,
                                     Movie(
+                                        customer: 1,
                                         name: data[index].title,
                                         type: data[index].type,
                                         title: data[index].title,
@@ -117,16 +125,18 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                           child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(data[index].id.toString()),
-                                Text(data[index].name),
-                                Text(
-                                  data[index].type,
-                                ),
-                                Text(data[index].year.toString())
-                              ],
+                            child: ListTile(
+                              leading: data[index].poster != null && data[index].poster.length != 0
+                                  ? Image.network("https:" + data[index].poster)
+                                  : const Icon(Icons.close),
+                              subtitle: Text(data[index].year.toString() + " год"),
+                              trailing: Column(
+                                children: [
+                                  Text(data[index].id.toString()),
+                                  Text(data[index].type),
+                                ],
+                              ),
+                              title: Text(data[index].name),
                             ),
                           ),
                         ),
@@ -146,10 +156,9 @@ class _HomePageState extends State<HomePage> {
               onPressed: () async {
                 activeDB = DbManager.tableSerials;
                 var movies = apiService.getSingleUser(
-                    '3d4a027b299fa38e7531549768ec8209', '77044', 'tv-series');
+                    'f3b1257ca5aed91693957832ac3153c8', '77044', 'tv-series');
                 movies.then((value) {
                   kinopoisk = value.body;
-                  dbManager.openDb();
                   dbManager.insertData(
                       activeDB,
                       Movie(
@@ -175,9 +184,15 @@ class _HomePageState extends State<HomePage> {
                 child: ElevatedButton(
               onPressed: () async {
                 activeDB = DbManager.tableMovies;
+                Random rnd;
+                int min = 1110;
+                int max = 1500;
+                rnd = Random();
+                int val = min + rnd.nextInt(max - min);
+                print(val);
 
-                var movies = apiService.getSingleUser(
-                    '3d4a027b299fa38e7531549768ec8209', '1143243', 'movies');
+                var movies =
+                    apiService.getSingleUser('f3b1257ca5aed91693957832ac3153c8', '$val', 'movies');
                 movies.then((value) {
                   kinopoisk = value.body;
                   // dbManager.openDb();
@@ -273,44 +288,43 @@ class _HomePageState extends State<HomePage> {
           children: [
             Center(
                 child: ElevatedButton(
-              onPressed: () async {
-                List<String> a = [];
+              onPressed: () async {             
+                 Navigator.push(context, MaterialPageRoute(builder: (builder) => FavoritsScreen()));
+                // List<String> a = [];
 
-                final res = await showOkCancelAlertDialog(
-                  context: context,
-                  title: 'Вывести избранное?',
-                  okLabel: 'Ok',
-                  cancelLabel: 'Cancel',
-                );
+                // final res = await showOkCancelAlertDialog(
+                //   context: context,
+                //   title: 'Вывести избранное?',
+                //   okLabel: 'Ok',
+                //   cancelLabel: 'Cancel',
+                // );
 
-                if (res == OkCancelResult.ok) {
-                  dbManager.getData(DbManager.tableFavorites).then((value) {
-                    value.forEach((element) {
-                      a.add(element.toMap().toString());
+                // if (res == OkCancelResult.ok) {
+                //   dbManager.getData(DbManager.tableFavorites).then((value) {
+                //     value.forEach((element) {
+                //       a.add(element.toMap().toString());
 
-                      print(a);
+                //       print(a);
 
-                      print(element);
-                    });
-                  });
-                } else {
-                  
-                }
+                //       print(element);
+                //     });
+                //   });
+                // } else {}
 
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) => SimpleDialog(
-                        title: Center(child: Text("resoult")),
-                        children: a
-                            .map<Widget>((e) => Container(
-                                height: 50,
-                                child: SingleChildScrollView(
-                                    child: Column(
-                                  children: [
-                                    SizedBox(height: 50, child: Text(e.toString())),
-                                  ],
-                                ))))
-                            .toList()));
+                // showDialog(
+                //     context: context,
+                //     builder: (BuildContext context) => SimpleDialog(
+                //         title: Center(child: Text("resoult")),
+                //         children: a
+                //             .map<Widget>((e) => Container(
+                //                 height: 50,
+                //                 child: SingleChildScrollView(
+                //                     child: Column(
+                //                   children: [
+                //                     SizedBox(height: 50, child: Text(e.toString())),
+                //                   ],
+                //                 ))))
+                //             .toList()));
               },
               child: Text('вывести избранное'),
             )),

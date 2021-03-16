@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class Movie {
   final int id;
   final String name;
@@ -8,11 +6,12 @@ class Movie {
   final int year;
   final String poster;
   final String description;
+   final int customer;
 
-  Movie({
-    @required this.name,
-    
-    @required this.type,
+  Movie( {
+   this.name,
+    this.customer,
+     this.type,
     this.id,
     this.title,
     this.year,
@@ -23,6 +22,7 @@ class Movie {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'customer': customer,
       'name': name,
       'type': type,
       'title': title,

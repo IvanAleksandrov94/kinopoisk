@@ -4,10 +4,11 @@ import 'package:dbproject/presentation/screens/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'sqlite/db_helper.dart';
 
 void main() {
   runApp(MyApp());
-  
+  DbManager().openDb();
 }
 
 class MyApp extends StatelessWidget {
