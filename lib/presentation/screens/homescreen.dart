@@ -126,9 +126,14 @@ class _HomePageState extends State<HomePage> {
                           ],
                           child: Center(
                             child: ListTile(
-                              leading: data[index].poster != null && data[index].poster.length != 0
-                                  ? Image.network("https:" + data[index].poster)
-                                  : const Icon(Icons.close),
+                              leading:
+                                  data[index].poster != 'null' && data[index].poster != 'poster'
+                                      ? Image.network("https:" + data[index].poster)
+                                      : const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                          size: 40.0,
+                                        ),
                               subtitle: Text(data[index].year.toString() + " год"),
                               trailing: Column(
                                 children: [
@@ -155,8 +160,8 @@ class _HomePageState extends State<HomePage> {
                 child: ElevatedButton(
               onPressed: () async {
                 activeDB = DbManager.tableSerials;
-                var movies = apiService.getSingleUser(
-                    'f3b1257ca5aed91693957832ac3153c8', '77044', 'tv-series');
+                var movies =
+                    apiService.getData('f3b1257ca5aed91693957832ac3153c8', '77044', 'tv-series');
                 movies.then((value) {
                   kinopoisk = value.body;
                   dbManager.insertData(
@@ -192,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                 print(val);
 
                 var movies =
-                    apiService.getSingleUser('f3b1257ca5aed91693957832ac3153c8', '$val', 'movies');
+                    apiService.getData('f3b1257ca5aed91693957832ac3153c8', '$val', 'movies');
                 movies.then((value) {
                   kinopoisk = value.body;
                   // dbManager.openDb();
@@ -288,8 +293,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             Center(
                 child: ElevatedButton(
-              onPressed: () async {             
-                 Navigator.push(context, MaterialPageRoute(builder: (builder) => FavoritsScreen()));
+              onPressed: () async {
+                Navigator.push(context, MaterialPageRoute(builder: (builder) => FavoritsScreen()));
                 // List<String> a = [];
 
                 // final res = await showOkCancelAlertDialog(
@@ -404,7 +409,7 @@ class _HomePageState extends State<HomePage> {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => SimpleDialog(
-                            title: Center(child: Text("resoult")),
+                            title: Center(child: Text("favorits")),
                             children: a
                                 .map<Widget>((e) => Container(
                                     height: 50,

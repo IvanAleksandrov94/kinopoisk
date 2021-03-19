@@ -16,7 +16,7 @@ class _$ApiService extends ApiService {
   final definitionType = ApiService;
 
   @override
-  Future<Response<Kinopoisk>> getSingleUser(
+  Future<Response<Kinopoisk>> getData(
       String token, String id, String type) {
     final $url = 'https://api.kinopoisk.cloud/$type/$id/token/$token';
     final $request = Request('GET', $url, client.baseUrl);
